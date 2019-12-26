@@ -30,11 +30,11 @@ class Main:
 		if self.info[0][1] == 'L':
 			player1 = Player(self.info[0][0], 'WHITE')
 		else:
-			player1 = ChessAI(self.info[0][0], 'WHITE', behavior = 'value')
+			player1 = ChessAI(self.info[0][0], 'WHITE', behavior = 'minimax1')
 		if self.info[1][1] == 'L':
 			player2 = Player(self.info[1][0], 'BLACK')
 		else:
-			player2 = ChessAI(self.info[1][0], 'BLACK', behavior = 'value')
+			player2 = ChessAI(self.info[1][0], 'BLACK', behavior = 'minimax1')
 		self.players = [player1, player2]
 
 	def loop(self):

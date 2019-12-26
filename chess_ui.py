@@ -146,7 +146,7 @@ class Game:
 					(mouseX, mouseY) = pygame.mouse.get_pos()
 					print((mouseX,mouseY))
 					squareClicked = self.screenToBoard((mouseX,mouseY))
-					print(board[squareClicked[0]][squareClicked[1]])
+					# print(board[squareClicked[0]][squareClicked[1]])
 					if squareClicked[0] > 7 or squareClicked[0] < 0 or squareClicked[1] > 7 or squareClicked[1] < 0:
 						squareClicked = []
 				if e.type is QUIT:
