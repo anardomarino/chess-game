@@ -39,6 +39,9 @@ class Rules:
 
 		fr,fc = from_coord
 		tr,tc = to_coord
+		if tr >= len(board) or tc >= len(board) or tr < 0 or tc < 0:
+			return False
+
 		f_piece = board[fr][fc]
 		t_piece = board[tr][tc]
 
@@ -156,8 +159,12 @@ class Rules:
 		for r in range(len(board)):
 			for c in range(len(board)):
 				if board[r][c][0] == enemy_color:
-					if self.isLegalMove(board, enemy_side, (r,c), king_pos, orientedWhite):
-						return True
+					try:
+						# Test if there is a king_pos
+						if self.isLegalMove(board, enemy_side, (r,c), king_pos, orientedWhite):
+							return True
+					except UnboundLocalError:
+						return False
 		return False
 
 	def isClearPath(self, board, from_coord, to_coord):

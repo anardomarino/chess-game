@@ -24,9 +24,9 @@ class Game:
 	
 	def loadImgs(self):
 		self.squaresize = 50
-		self.white 	= pygame.image.load("img/white.png")
-		self.tan 	= pygame.image.load("img/tan.png")
-		self.blue 	= pygame.image.load("img/blue.png")
+		self.white 	= pygame.image.load("img/wood/brown.png")
+		self.tan 	= pygame.image.load("img/wood/tan.png")
+		self.blue 	= pygame.image.load("img/wood/blue.png")
 		self.bp		= pygame.image.load("img/bp.png")
 		self.br 	= pygame.image.load("img/br.png")
 		self.bb 	= pygame.image.load("img/bb.png")

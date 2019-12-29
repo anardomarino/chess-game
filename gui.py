@@ -19,7 +19,7 @@ class Main:
 		else:
 			color = 'BLACK'
 		self.board = Board(color)
-		if color == 'WHITE': 
+		if color == 'WHITE':
 			self.orientation = 1
 		else:
 			self.orientation = 0
@@ -30,11 +30,11 @@ class Main:
 		if self.info[0][1] == 'L':
 			player1 = Player(self.info[0][0], 'WHITE')
 		else:
-			player1 = ChessAI(self.info[0][0], 'WHITE', behavior = 'minimax1')
+			player1 = ChessAI(self.info[0][0], 'WHITE', behavior = 'alphabeta')
 		if self.info[1][1] == 'L':
 			player2 = Player(self.info[1][0], 'BLACK')
 		else:
-			player2 = ChessAI(self.info[1][0], 'BLACK', behavior = 'minimax1')
+			player2 = ChessAI(self.info[1][0], 'BLACK', behavior = 'alphabeta')
 		self.players = [player1, player2]
 
 	def loop(self):
@@ -45,8 +45,8 @@ class Main:
 			current_color = self.players[current_player].getColor()
 			if current_color == 'WHITE':
 				turn_count += 1
-			self.gui.draw(board)
 			self.gui.printMessage(self.players[current_player].getName() + "\'s move.")
+			self.gui.draw(board)
 
 			if self.rules.isInCheck(board, current_color, self.orientation):
 				self.gui.printMessage(self.players[current_player].getName() + " is in check.")
