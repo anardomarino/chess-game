@@ -3,6 +3,7 @@ import random
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+from piece_vals import *
 
 values = {'e' : 0,
 		  'p' : 1,
@@ -229,22 +230,46 @@ class ChessAI:
 
 	def potBoards(self, board, side, pieces, orientation):
 		boards = []
+		scores = []
+		done = True
 		for piece in pieces:
 			piece_moves = self.rules.getValidMoves(board, side, piece, orientation)
 			for i in piece_moves:
+				done = False
+				if board[i[0]][i[1]][1] == 'k':
+					print('k')
+					continue
 				boards.append(self.getNewBoard(board, (piece,i)))
-		return boards
+				scores.append(self.scoreBoard(boards[-1], side, orientation))
+		if done:
+			return []
+		base = list(zip(boards, scores))
+		base = sorted(base, key = lambda x : x[1], reverse = False)
+		try:
+			boards = (list(zip(*base))[0])
+			return boards
+		except:
+			return boards
 
-	def scoreBoard(self, board, side):
+	# def scoreBoard(self, board, side):
+	# 	score = 0
+	# 	for r in range(len(board)):
+	# 		for c in range(len(board)):
+	# 			piece = board[r][c]
+	# 			if piece == 'ee':
+	# 				continue
+	# 			else:
+	# 				mine = (piece[0]==side[0].lower())
+	# 				score += (mine - (not mine))*(values[piece[1]])
+	# 	return score
+
+	def scoreBoard(self, board, side, orientation):
 		score = 0
 		for r in range(len(board)):
 			for c in range(len(board)):
-				piece = board[r][c]
-				if piece == 'ee':
-					continue
-				else:
-					mine = (piece[0]==side[0].lower())
-					score += (mine - (not mine))*(values[piece[1]])
+				ally, name = board[r][c][0], board[r][c][1]
+				if name != 'e':
+					score += dynamicValue(ally, name, side, (r,c), orientation)
 		return score
 
 	def getNewBoard(self, board, move):
@@ -258,7 +283,12 @@ class ChessAI:
 		temp_board = deepcopy(board)
 		piece = temp_board[fr][fc]
 		temp_board[fr][fc] = 'ee'
-		temp_board[tr][tc] = piece 
+
+		# Check if pawn gets queened
+		if piece[1] == 'p' and (tr == 7 or tr == 0):
+			temp_board[tr][tc] = piece[0] + 'q'
+		else:
+			temp_board[tr][tc] = piece 
 
 		return temp_board
 
@@ -317,13 +347,13 @@ class ChessAI:
 	def alphaBeta(self, board, orientation, this_player = True, depth = 0, a = float('-inf'), b = float('inf')):
 		if depth == 0:
 			self.count += 1
-			return self.scoreBoard(board, self.color)
+			return self.scoreBoard(board, self.color, orientation)
 		side   = this_player*self.color + (not this_player)*self.opcol
 		pieces = self.getMyPieces(board, side)
 		boards = self.potBoards(board, side, pieces, orientation)
 		if len(boards) == 0:
 			self.count += 1
-			return self.scoreBoard(board, self.color)
+			return self.scoreBoard(board, self.color, orientation)
 
 		# moves  = self.getPieceMoves(board, side, pieces, orientation)
 		# # If no possible moves / deadend, return board value
@@ -346,12 +376,17 @@ class ChessAI:
 			value = float('inf')
 			for tboard in boards:
 				value = min(value, self.alphaBeta(tboard, orientation,  True, depth - 1, a, b))
-				b     = min(b, value)
+				b     = min(value, b)
 				if a >= b:
 					break 	# a cutoff
 			return value
 
-	def alphaBetaPruneMove(self, board, orientation, depth = 3):
+	def alphaBetaPruneMove(self, board, orientation, depth = 2):
+		# Problem with eliminating branches
+		# Does not take into consideration some of my moves are
+		#	more likely than others, therefore moves to the position
+		#	that would be best for if I was oblivious to an opening
+		# I.e. too aggressive?
 		pieces = self.getMyPieces(board, self.color)
 		moves  = self.getPieceMoves(board, self.color, pieces, orientation)
 		boards = []
@@ -362,6 +397,9 @@ class ChessAI:
 		for tboard in boards:
 			scores.append(self.alphaBeta(tboard, orientation, True, depth, -10000, 10000))
 		print('node count =', self.count)
+		print(moves)
+		print(scores)
+		print(len(moves))
 		return moves[np.argmax(scores)]
 
 if __name__ == '__main__':
@@ -389,6 +427,6 @@ if __name__ == '__main__':
 
 	ai = ChessAI('a','BLACK')
 	start = time.time()
-	print(ai.alphaBetaPruneMove(default_board_state, 1, 4))
+	print(ai.alphaBetaPruneMove(default_board_state, 1, 2))
 	end = time.time()
 	print(end-start)
